@@ -96,9 +96,10 @@ scotchApp.controller('mainController', function($scope) {
 
 
                     var ans = scope.answer;
-                    console.log(ans);
+                    console.log("choisie : " + ans);
+                    console.log("bonne rep : " + scope.answer);
 
-                    if(ans == scope.options[scope.answer]) {
+                    if(ans == scope.answer) {
                         scope.score++;
                         scope.total++;
                         scope.correctAns = true;
