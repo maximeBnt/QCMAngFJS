@@ -43,6 +43,7 @@ scotchApp.config(['$routeProvider', '$locationProvider', function($routeProvider
 
 // create the controller and inject Angular's $scope
 scotchApp.controller('mainController', function($scope) {
+
 });
 
 
@@ -51,23 +52,28 @@ scotchApp.controller('mainController', function($scope) {
                 ////////////////////
 
     scotchApp.controller('qcmController', function($scope){
+
+
     });
 
-// create a message to display in our view
+                ////////////////////
+                // Directive QUIZ //
+                ////////////////////
+
     scotchApp.directive('quiz', function(qcmFactory) {
         return {
             restrict: 'AE',
             scope: {},
-            templateUrl: 'pages/test.html',
-            link: function(scope, elem, attrs) {
-                scope.start = function() {
+            templateUrl: 'pages/qcm.html',
+            link: function (scope, elem, attrs) {
+                scope.start = function () {
                     scope.id = 0; // id de la question
                     scope.fini = false;
                     scope.inProgress = true;
                     scope.getQuestion();
                 };
 
-                scope.reset = function() {
+                scope.reset = function () {
                     scope.inProgress = false;
                     scope.score = 0;
                     scope.manque = 0;
@@ -75,9 +81,9 @@ scotchApp.controller('mainController', function($scope) {
 
                 }
 
-                scope.getQuestion = function() {
+                scope.getQuestion = function () {
                     var q = qcmFactory.getQuestion(scope.id);
-                    if(q) {
+                    if (q) {
                         scope.question = q.question;
                         scope.options = q.options;
                         scope.answer = q.answer;
@@ -87,18 +93,13 @@ scotchApp.controller('mainController', function($scope) {
                     }
                 };
 
-                scope.checkAnswer = function() {
+                scope.checkAnswer = function () {
 
-                    // if(!$('input[name=answer]:checked').length) return;// ne fait rien si on a pas choisi de question
-
-                    // var ans = $('input[name=answer]:checked').val(); // recup la reponse selectionnee
-
-
-                    var ans = scope.answer;
+                    var ans = scope.radio.id;
                     console.log("choisie : " + ans);
-                    console.log("bonne rep : " + scope.options[scope.answer]);
+                    console.log("bonne rep : " + scope.answer);
 
-                    if(ans == scope.answer) {
+                    if (ans == scope.answer) {
                         scope.score++;
                         scope.total++;
                         scope.correctAns = true;
@@ -111,12 +112,18 @@ scotchApp.controller('mainController', function($scope) {
                     scope.answerMode = false;
                 };
 
-                scope.nextQuestion = function() {
+                scope.nextQuestion = function () {
                     scope.id++;
                     scope.getQuestion();
                 }
 
                 scope.reset();
+            },
+            controller: function ($scope) {
+                // permet de récupérer les coordonnées de la réponse choisie
+                $scope.radio = {
+                    id: ''
+                };
             }
         }
     });

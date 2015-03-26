@@ -1,20 +1,19 @@
-<!-- home.html -->
+<!-- qcm.html -->
 <div ng-controller="mainController" class="jumbotron text-center">
     <h1>Home Page</h1>
 
-    <button ng-click="start()" class="next-question">Suivant</button>
     <div class="quiz-area" ng-show="inProgress">
         <div ng-show="!fini">
             <div class="alert alert-info"><h2 id="question">{{question}}</h2></div>
             <ul id="options">
                 <li ng-repeat="option in options">
                     <label>
-                        <input type="radio" name="answer" value="{{option}}">
+                        <input type="radio" name="answer" ng-model="radio.id" value="{{$index}}">
                         {{option}}
                     </label>
                 </li>
             </ul>
-
+            <tt>color = {{radio.id | json}}</tt>
             <button ng-click="checkAnswer()" ng-show="answerMode">Valider</button><br>
 
             <div ng-show="!answerMode">
@@ -41,11 +40,13 @@
     </div>
 
     <!-- PAR DEFAUT -->
+
     <div class="intro" ng-show="!inProgress">
         <p> App Code de la route en Angular</p>
-        <button id="startQuiz" ng-click="start()"><a href="#qcm">Commencer</a></button>
+        <button ng-click="start()" class="startQuiz" ng-show="!inProgress">commencer</button>
 
     </div>
+
 
 
     <p>{{ message }}</p>
