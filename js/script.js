@@ -1,41 +1,8 @@
 // script.js
 
-// create the module and name it scotchApp
-// also include ngRoute for all our routing needs
 var scotchApp = angular.module('scotchApp', ['ngRoute']);
 
-// configure our routes
-scotchApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
-    $routeProvider
-
-        // route for the home page
-        /*.when('/home', {
-            templateUrl : 'pages/home.html',
-            controller  : 'mainController'
-        })*/
-
-        // route for the about page
-        .when('/about', {
-            templateUrl : 'pages/about.html',
-            controller  : 'aboutController'
-        })
-
-        // route for the contact page
-        .when('/contact', {
-            templateUrl : 'pages/contact.html',
-            controller  : 'contactController'
-        })
-        .when('/', {
-            templateUrl : 'pages/home.html',
-            controller  : 'mainController'
-        })
-        .otherwise({
-            redirectTo:'/'
-        });
-    if(window.history && window.history.pushState){
-        $locationProvider.html5Mode(true);
-    }
-}]);
+scotchApp.config(['$routeProvider', '$locationProvider', require("./config/routes")]);
 
                 ////////////////////
                 // MAINCONTROLLER //
@@ -115,7 +82,7 @@ scotchApp.controller('mainController', function($scope) {
                 scope.nextQuestion = function () {
                     scope.id++;
                     scope.getQuestion();
-                    scope.radio.id = '';
+                    scope.radio.id = ''; // remise à zéro du scope pour la déselection du btn radio à la question suivante
                 }
 
                 scope.reset();

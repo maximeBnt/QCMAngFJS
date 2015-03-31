@@ -1,19 +1,12 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
-// script.js
-
-// create the module and name it scotchApp
-// also include ngRoute for all our routing needs
-var scotchApp = angular.module('scotchApp', ['ngRoute']);
-
-// configure our routes
-scotchApp.config(['$routeProvider', '$locationProvider', function($routeProvider, $locationProvider) {
+module.exports=function($routeProvider, $locationProvider) {
     $routeProvider
 
         // route for the home page
         /*.when('/home', {
-            templateUrl : 'pages/home.html',
-            controller  : 'mainController'
-        })*/
+         templateUrl : 'pages/home.html',
+         controller  : 'mainController'
+         })*/
 
         // route for the about page
         .when('/about', {
@@ -36,7 +29,13 @@ scotchApp.config(['$routeProvider', '$locationProvider', function($routeProvider
     if(window.history && window.history.pushState){
         $locationProvider.html5Mode(true);
     }
-}]);
+};
+},{}],2:[function(require,module,exports){
+// script.js
+
+var scotchApp = angular.module('scotchApp', ['ngRoute']);
+
+scotchApp.config(['$routeProvider', '$locationProvider', require("./config/routes")]);
 
                 ////////////////////
                 // MAINCONTROLLER //
@@ -116,7 +115,7 @@ scotchApp.controller('mainController', function($scope) {
                 scope.nextQuestion = function () {
                     scope.id++;
                     scope.getQuestion();
-                    scope.radio.id = '';
+                    scope.radio.id = ''; // remise à zéro du scope pour la déselection du btn radio à la question suivante
                 }
 
                 scope.reset();
@@ -186,4 +185,4 @@ scotchApp.controller('contactController', function($scope) {
 });
 
 
-},{}]},{},[1]);
+},{"./config/routes":1}]},{},[2]);
