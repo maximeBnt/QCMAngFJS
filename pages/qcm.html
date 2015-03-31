@@ -13,7 +13,7 @@
                     </label>
                 </li>
             </ul>
-            <tt>color = {{radio.id | json}}</tt>
+            <button ng-clock="uncheck()" class="next-question">Unckeck</button>
             <button ng-click="checkAnswer()" ng-show="answerMode">Valider</button><br>
 
             <div ng-show="!answerMode">

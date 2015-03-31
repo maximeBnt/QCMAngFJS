@@ -125,6 +125,11 @@ scotchApp.controller('mainController', function($scope) {
                 $scope.radio = {
                     id: ''
                 };
+                $scope.uncheck = function (event) {
+                    if ($scope.radio.id == event.target.value)
+                        $scope.radio.id = false
+                };
+
             }
         }
     });
