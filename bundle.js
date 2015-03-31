@@ -116,6 +116,7 @@ scotchApp.controller('mainController', function($scope) {
                 scope.nextQuestion = function () {
                     scope.id++;
                     scope.getQuestion();
+                    scope.radio.id = '';
                 }
 
                 scope.reset();
