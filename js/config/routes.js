@@ -7,6 +7,10 @@ module.exports=function($routeProvider, $locationProvider) {
          controller  : 'mainController'
          })*/
 
+        .when('/', {
+            templateUrl : 'pages/home.html',
+            controller  : 'mainController'
+        })
         // route for the about page
         .when('/about', {
             templateUrl : 'pages/about.html',
@@ -18,8 +22,9 @@ module.exports=function($routeProvider, $locationProvider) {
             templateUrl : 'pages/contact.html',
             controller  : 'contactController'
         })
-        .when('/', {
-            templateUrl : 'pages/home.html',
+
+        .when('/rest', {
+            templateUrl : 'pages/rest.html',
             controller  : 'mainController'
         })
         .otherwise({
