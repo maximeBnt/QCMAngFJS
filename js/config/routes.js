@@ -25,7 +25,7 @@ module.exports=function($routeProvider, $locationProvider) {
 
         .when('/rest', {
             templateUrl : 'pages/rest.html',
-            controller  : 'mainController'
+            controller  : 'restController'
         })
         .otherwise({
             redirectTo:'/'

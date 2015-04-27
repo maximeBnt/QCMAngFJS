@@ -1,13 +1,15 @@
 // script.js
 
 
-var scotchApp = angular.module('scotchApp', ['ngRoute']);
+var scotchApp = angular.module('scotchApp', ['ngRoute', 'ngResource']);
 
-// Routing
+// Config
 scotchApp.config(['$routeProvider', '$locationProvider', require("./config/routes")]);
+scotchApp.factory("restConfig", require("./config/configFactory"));
 
 scotchApp.controller('mainController', function($scope) {});
 scotchApp.controller('qcmController', function($scope){});
+
 
 
 // appel de la directive et du factory contenant les fonctions
@@ -15,6 +17,9 @@ scotchApp.controller('qcmController', function($scope){});
 
 scotchApp.directive('quiz', require("./qcm/qcmDirective"));
 scotchApp.factory('qcmFactory', require("./qcm/qcmFactory"));
+
+scotchApp.service('rest', ["$http","$resource", "$location", "restConfig", "$sce", require("./services/rest")]);
+
 
 
 scotchApp.controller('aboutController', function($scope) {
@@ -25,3 +30,4 @@ scotchApp.controller('contactController', function($scope) {
     $scope.message = 'Contact us! JK. This is just a demo.';
 });
 
+scotchApp.controller('restController', ["$scope", "rest", "$location", require("./testRest")]);

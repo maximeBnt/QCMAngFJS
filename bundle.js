@@ -1,4 +1,19 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/**
+ * Created by maximeb on 27/04/15.
+ */
+module.exports=function() {
+    var factory={breweries:{},server:{},questions:{}};
+    factory.activeBrewery=undefined;
+    factory.breweries.loaded=false;
+    factory.breweries.refresh="all";//all|ask
+    factory.breweries.update="immediate";//deffered|immediate
+    factory.server.privateToken="";
+    factory.server.restServerUrl="http://127.0.0.1/rest-QCM/";
+    factory.server.force=false;
+    return factory;
+};
+},{}],2:[function(require,module,exports){
 module.exports=function($routeProvider, $locationProvider) {
     $routeProvider
 
@@ -26,7 +41,7 @@ module.exports=function($routeProvider, $locationProvider) {
 
         .when('/rest', {
             templateUrl : 'pages/rest.html',
-            controller  : 'mainController'
+            controller  : 'restController'
         })
         .otherwise({
             redirectTo:'/'
@@ -35,7 +50,7 @@ module.exports=function($routeProvider, $locationProvider) {
         $locationProvider.html5Mode(true);
     }
 };
-},{}],2:[function(require,module,exports){
+},{}],3:[function(require,module,exports){
 
             ////////////////////
             // Directive QCM  //
@@ -110,7 +125,7 @@ module.exports = function(qcmFactory) {
         }
     }
 };
-},{}],3:[function(require,module,exports){
+},{}],4:[function(require,module,exports){
 
             ////////////////////
             //  Factory QCM   //
@@ -155,17 +170,19 @@ module.exports = function() {
         }
     };
 };
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 // script.js
 
 
-var scotchApp = angular.module('scotchApp', ['ngRoute']);
+var scotchApp = angular.module('scotchApp', ['ngRoute', 'ngResource']);
 
-// Routing
+// Config
 scotchApp.config(['$routeProvider', '$locationProvider', require("./config/routes")]);
+scotchApp.factory("restConfig", require("./config/configFactory"));
 
 scotchApp.controller('mainController', function($scope) {});
 scotchApp.controller('qcmController', function($scope){});
+
 
 
 // appel de la directive et du factory contenant les fonctions
@@ -173,6 +190,9 @@ scotchApp.controller('qcmController', function($scope){});
 
 scotchApp.directive('quiz', require("./qcm/qcmDirective"));
 scotchApp.factory('qcmFactory', require("./qcm/qcmFactory"));
+
+scotchApp.service('rest', ["$http","$resource", "$location", "restConfig", "$sce", require("./services/rest")]);
+
 
 
 scotchApp.controller('aboutController', function($scope) {
@@ -183,5 +203,137 @@ scotchApp.controller('contactController', function($scope) {
     $scope.message = 'Contact us! JK. This is just a demo.';
 });
 
+scotchApp.controller('restController', ["$scope", "rest", "$location", require("./testRest")]);
+},{"./config/configFactory":1,"./config/routes":2,"./qcm/qcmDirective":3,"./qcm/qcmFactory":4,"./services/rest":6,"./testRest":7}],6:[function(require,module,exports){
+module.exports=function($http,$resource,$location,restConfig,$sce) {
+    var self=this;
+    if(angular.isUndefined(this.messages))
+        this.messages=new Array();
 
-},{"./config/routes":1,"./qcm/qcmDirective":2,"./qcm/qcmFactory":3}]},{},[4]);
+    this.getParams=function(){
+        return '?token='+restConfig.server.privateToken+'&force='+restConfig.server.force;
+    }
+    this.headers={ 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        'Accept': 'application/json'
+    };
+    this.getAll=function(response,what){
+        var request = $http({
+            method: "GET",
+            url: restConfig.server.restServerUrl+what+this.getParams(),
+            headers: {'Accept': 'application/json'},
+            callback: 'JSON_CALLBACK'
+        });
+        request.success(function(data, status, headers, config) {
+            response[what]=data;
+            restConfig[what].all=data;
+            response.load=false;
+        }).
+            error(function(data, status, headers, config) {
+                self.addMessage({type: "danger", content: "Erreur de connexion au serveur, statut de la réponse : "+status});
+                console.log("Erreur de connexion au serveur, statut de la réponse : "+status);
+            });
+    };
+    this.addMessage=function(message){
+        content=$sce.trustAsHtml(message.content);
+        self.messages.push({"type":message.type,"content":content});
+    };
+
+    this.post=function(response,what,name,callback){
+        if(angular.isUndefined(callback))
+            this.clearMessages();
+        $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
+        $http.defaults.headers.post["Accept"] = "application/json";
+
+        var request = $http({
+            method: "POST",
+            url: restConfig.server.restServerUrl+what+this.getParams(),
+            data: response.posted,
+            headers: self.headers
+        });
+        request.success(function(data, status, headers, config) {
+            self.addMessage(data.message);
+            if(angular.isUndefined(callback)){
+                $location.path("/"+what);
+            }else{
+                callback();
+            }
+        }).error(function(data, status, headers, config){
+            self.addMessage({type: "warning", content:"Erreur de connexion au serveur, statut de la réponse : "+status+"<br>"+data.message});
+        });
+    };
+
+    this.put=function(id,response,what,name,callback){
+        if(angular.isUndefined(callback))
+            this.clearMessages();
+        $http.defaults.headers.post["Content-Type"] = "application/x-www-form-urlencoded";
+        $http.defaults.headers.post["Accept"] = "text/plain";
+        var request = $http({
+            method: "PUT",
+            url: restConfig.server.restServerUrl+what+'/'+id+this.getParams(),
+            data: response.posted,
+            headers: self.headers
+        });
+        request.success(function(data, status, headers, config) {
+            self.addMessage(data.message);
+            if(angular.isUndefined(callback)){
+                $location.path("/"+what);
+            }else{
+                callback();
+            }
+        }).error(function(data, status, headers, config){
+            self.addMessage({type: "warning", content: "Erreur de connexion au serveur, statut de la réponse : "+status+"<br>"+data.message});
+        });
+    };
+
+    this.remove=function(object,what,callback){
+        if(angular.isUndefined(callback))
+            this.clearMessages();
+        var request = $http({
+            method: "DELETE",
+            url: restConfig.server.restServerUrl+what+'/'+object.id+this.getParams(),
+            headers: self.headers
+        });
+        request.success(function(data, status, headers, config) {
+            self.addMessage(data.message);
+            if(angular.isDefined(callback)){
+                callback();
+            }
+        }).error(function(data, status, headers, config){
+            self.addMessage({type: "warning", content: "Erreur de connexion au serveur, statut de la réponse : "+status+"<br>"+data.message});
+        });
+    };
+
+    this.clearMessages=function(){
+        self.messages.length=0;
+    };
+};
+},{}],7:[function(require,module,exports){
+/**
+ * Created by maximeb on 27/04/15.
+ */
+
+    ////////////////////
+    //  TEST REST     //
+    ////////////////////
+
+module.exports = function($scope, rest, $location) {
+    $scope.message = 'This is the REST test page';
+
+    $scope.questionComplete = {};
+
+    $scope.response ={};
+
+    rest.getAll($scope.response, "questions");
+
+
+    /*$scope.addToIncluded = function(){
+        $scope.selectedIncludedItems=[];
+        angular.forEach($scope.selectedDispoItems, function (value) {
+            $scope.includedItems.push(value);
+            $scope.selectedIncludedItems.push(value);
+            $scope.dispoItems.splice($scope.dispoItems.indexOf(value),1);
+        });
+        $scope.selectedDispoItems=[];
+    };*/
+};
+},{}]},{},[5]);
