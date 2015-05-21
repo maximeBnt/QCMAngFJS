@@ -2,7 +2,7 @@
  * Created by maximeb on 27/04/15.
  */
 module.exports=function() {
-    var factory={breweries:{},server:{},questions:{}};
+    var factory={breweries:{},server:{},questions:{}, questionnaires:{}};
     factory.activeBrewery=undefined;
     factory.breweries.loaded=false;
     factory.breweries.refresh="all";//all|ask

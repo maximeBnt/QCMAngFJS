@@ -9,13 +9,29 @@ module.exports=function($http,$resource,$location,restConfig,$sce) {
     this.headers={ 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
         'Accept': 'application/json'
     };
-    this.getAll=function(response,what){
-        var request = $http({
-            method: "GET",
-            url: restConfig.server.restServerUrl+what+this.getParams(),
-            headers: {'Accept': 'application/json'},
-            callback: 'JSON_CALLBACK'
-        });
+
+
+        ////////// GET ALL //////////
+
+    this.getAll=function(response,what, param, id){
+        if (!isset(param), !isset(id)) {
+            var request = $http({
+                method: "GET",
+                url: restConfig.server.restServerUrl+what+this.getParams(),
+                headers: {'Accept': 'application/json'},
+                callback: 'JSON_CALLBACK'
+            });
+        }
+        else{
+            var request = $http({
+                method: "GET",
+                url: restConfig.server.restServerUrl+what+"/"+param+"/"+id+this.getParams(),
+                headers: {'Accept': 'application/json'},
+                callback: 'JSON_CALLBACK'
+            });
+
+        }
+
         request.success(function(data, status, headers, config) {
             response[what]=data;
             restConfig[what].all=data;
@@ -26,9 +42,25 @@ module.exports=function($http,$resource,$location,restConfig,$sce) {
                 console.log("Erreur de connexion au serveur, statut de la réponse : "+status);
             });
     };
-    this.addMessage=function(message){
-        content=$sce.trustAsHtml(message.content);
-        self.messages.push({"type":message.type,"content":content});
+
+
+        ////////// GET ONE //////////
+
+    this.getOne= function (response, what, id) {
+        var request = $http({
+            method: "GET",
+            url: restConfig.server.restServerUrl+what+"/"+id+this.getParams(),
+            headers: {'Accept': 'application/json'},
+            callback: 'JSON_CALLBACK'
+        });
+        request.success(function(data, status, headers, config) {
+            response[what]=data;
+        }).
+            error(function(data, status, headers, config) {
+                self.addMessage({type: "danger", content: "Erreur de connexion au serveur, statut de la réponse : "+status});
+                console.log("Erreur de connexion au serveur, statut de la réponse : "+status);
+            });
+
     };
 
     this.post=function(response,what,name,callback){
@@ -96,7 +128,40 @@ module.exports=function($http,$resource,$location,restConfig,$sce) {
         });
     };
 
+    this.addMessage=function(message){
+        content=$sce.trustAsHtml(message.content);
+        self.messages.push({"type":message.type,"content":content});
+    };
+
     this.clearMessages=function(){
         self.messages.length=0;
     };
+
+
+    function isset(  ) {
+        // http://kevin.vanzonneveld.net
+        // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+        // +   improved by: FremyCompany
+        // +   improved by: Onno Marsman
+        // *     example 1: isset( undefined, true);
+        // *     returns 1: false
+        // *     example 2: isset( 'Kevin van Zonneveld' );
+        // *     returns 2: true
+
+        var a=arguments; var l=a.length; var i=0;
+
+        if (l==0) {
+            throw new Error('Empty isset');
+        }
+
+        while (i!=l) {
+            if (typeof(a[i])=='undefined' || a[i]===null) {
+                return false;
+            } else {
+                i++;
+            }
+        }
+        return true;
+    }
+
 };

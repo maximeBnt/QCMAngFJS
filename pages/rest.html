@@ -11,8 +11,13 @@
 
 
             <select ng-options="item.question for item in questionComplete" ng-model="questionComplete" multiple="multiple" size="7"></select>
-            <select ng-options="item.libelle for item in response.questions" ng-model="questionComplete" multiple="multiple" size="7"></select>
+            <select ng-options="item.libelle for item in getTout.questions" ng-model="questionComplete" multiple="multiple" size="7"></select>
 
+            <p>{{getUn.questionnaires.libelle}}</p>
+
+            <div ng-repeat="item in getTout.questions">
+                {{item.libelle}}
+            </div>
 
 
         </div>

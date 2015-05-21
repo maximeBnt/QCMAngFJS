@@ -9,11 +9,12 @@
 module.exports = function($scope, rest, $location) {
     $scope.message = 'This is the REST test page';
 
-    $scope.questionComplete = {};
+    $scope.getUn = {};
 
-    $scope.response ={};
+    $scope.getTout ={};
 
-    rest.getAll($scope.response, "questions");
+    rest.getAll($scope.getTout, "questions");
+    rest.getOne($scope.getUn, "questionnaires", 3);
 
 
     /*$scope.addToIncluded = function(){

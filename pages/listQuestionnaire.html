@@ -1,0 +1,13 @@
+<!-- listQuestionnaire.html -->
+<div class="jumbotron text-center">
+    <h1>Liste des questionnaires</h1>
+
+    <p>{{ message }}</p>
+
+
+    <div ng-repeat="item in tableQuestionnaires.questionnaires">
+        <a ng-href="qcm/{{item.id}}">{{item.libelle}} - ID : {{item.id}}</a>
+    </div>
+
+
+</div>

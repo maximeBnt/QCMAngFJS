@@ -3,7 +3,7 @@
  * Created by maximeb on 27/04/15.
  */
 module.exports=function() {
-    var factory={breweries:{},server:{},questions:{}};
+    var factory={breweries:{},server:{},questions:{}, questionnaires:{}};
     factory.activeBrewery=undefined;
     factory.breweries.loaded=false;
     factory.breweries.refresh="all";//all|ask
@@ -42,6 +42,16 @@ module.exports=function($routeProvider, $locationProvider) {
         .when('/rest', {
             templateUrl : 'pages/rest.html',
             controller  : 'restController'
+        })
+
+        .when('/listQuestionnaire', {
+            templateUrl : 'pages/listQuestionnaire.html',
+            controller  : 'listController'
+        })
+
+        .when('/qcm/:id', {
+            templateUrl : 'pages/qcmComplet.html',
+            controller  : 'qcmControllerCoucou'
         })
         .otherwise({
             redirectTo:'/'
@@ -125,6 +135,7 @@ module.exports = function(qcmFactory) {
         }
     }
 };
+
 },{}],4:[function(require,module,exports){
 
             ////////////////////
@@ -204,6 +215,52 @@ scotchApp.controller('contactController', function($scope) {
 });
 
 scotchApp.controller('restController', ["$scope", "rest", "$location", require("./testRest")]);
+
+
+scotchApp.controller('listController', function($scope, rest) {
+    $scope.message = 'Questionnaires disponibles :';
+    $scope.tableQuestionnaires ={};
+
+    // liste les questionnaires
+    rest.getAll($scope.tableQuestionnaires, "questionnaires");
+});
+
+scotchApp.controller('qcmControllerCoucou', function($scope, rest, $routeParams) {
+    $scope.message = 'Coucou';
+
+    $scope.id = $routeParams.id;
+
+    // liste les questions d'un questionnaire passé en paramètre
+    $scope.tabQuestions = {};
+    rest.getAll($scope.tabQuestions, "questions", "QuestionByQuestionnaire", 159);
+
+
+
+    // injection des questions dans le factory QCM (en test)
+    $scope.getQuestion = function () {
+
+        var q = qcmFactory.getQuestion($scope.id);
+        if (q) {
+            scope.question = $scope.tabQuestions.questions.libelle;
+            scope.options = q.options;
+            scope.answer = q.answer;
+            scope.answerMode = true;
+        } else {
+            scope.fini = true;
+        }
+    };
+
+    // liste les réponses d'une question passée en paramètre
+    $scope.tabReponses = {};
+    rest.getAll($scope.tabReponses, "reponses", "ReponseByQuestion", 169);
+    // ça marche pour l'id 69
+
+    // essaie de foreach pour récupérer les réponses
+    // des questions chargées précédemment
+
+    //angular.forEach()
+
+});
 },{"./config/configFactory":1,"./config/routes":2,"./qcm/qcmDirective":3,"./qcm/qcmFactory":4,"./services/rest":6,"./testRest":7}],6:[function(require,module,exports){
 module.exports=function($http,$resource,$location,restConfig,$sce) {
     var self=this;
@@ -216,13 +273,29 @@ module.exports=function($http,$resource,$location,restConfig,$sce) {
     this.headers={ 'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
         'Accept': 'application/json'
     };
-    this.getAll=function(response,what){
-        var request = $http({
-            method: "GET",
-            url: restConfig.server.restServerUrl+what+this.getParams(),
-            headers: {'Accept': 'application/json'},
-            callback: 'JSON_CALLBACK'
-        });
+
+
+        ////////// GET ALL //////////
+
+    this.getAll=function(response,what, param, id){
+        if (!isset(param), !isset(id)) {
+            var request = $http({
+                method: "GET",
+                url: restConfig.server.restServerUrl+what+this.getParams(),
+                headers: {'Accept': 'application/json'},
+                callback: 'JSON_CALLBACK'
+            });
+        }
+        else{
+            var request = $http({
+                method: "GET",
+                url: restConfig.server.restServerUrl+what+"/"+param+"/"+id+this.getParams(),
+                headers: {'Accept': 'application/json'},
+                callback: 'JSON_CALLBACK'
+            });
+
+        }
+
         request.success(function(data, status, headers, config) {
             response[what]=data;
             restConfig[what].all=data;
@@ -233,9 +306,25 @@ module.exports=function($http,$resource,$location,restConfig,$sce) {
                 console.log("Erreur de connexion au serveur, statut de la réponse : "+status);
             });
     };
-    this.addMessage=function(message){
-        content=$sce.trustAsHtml(message.content);
-        self.messages.push({"type":message.type,"content":content});
+
+
+        ////////// GET ONE //////////
+
+    this.getOne= function (response, what, id) {
+        var request = $http({
+            method: "GET",
+            url: restConfig.server.restServerUrl+what+"/"+id+this.getParams(),
+            headers: {'Accept': 'application/json'},
+            callback: 'JSON_CALLBACK'
+        });
+        request.success(function(data, status, headers, config) {
+            response[what]=data;
+        }).
+            error(function(data, status, headers, config) {
+                self.addMessage({type: "danger", content: "Erreur de connexion au serveur, statut de la réponse : "+status});
+                console.log("Erreur de connexion au serveur, statut de la réponse : "+status);
+            });
+
     };
 
     this.post=function(response,what,name,callback){
@@ -303,9 +392,42 @@ module.exports=function($http,$resource,$location,restConfig,$sce) {
         });
     };
 
+    this.addMessage=function(message){
+        content=$sce.trustAsHtml(message.content);
+        self.messages.push({"type":message.type,"content":content});
+    };
+
     this.clearMessages=function(){
         self.messages.length=0;
     };
+
+
+    function isset(  ) {
+        // http://kevin.vanzonneveld.net
+        // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
+        // +   improved by: FremyCompany
+        // +   improved by: Onno Marsman
+        // *     example 1: isset( undefined, true);
+        // *     returns 1: false
+        // *     example 2: isset( 'Kevin van Zonneveld' );
+        // *     returns 2: true
+
+        var a=arguments; var l=a.length; var i=0;
+
+        if (l==0) {
+            throw new Error('Empty isset');
+        }
+
+        while (i!=l) {
+            if (typeof(a[i])=='undefined' || a[i]===null) {
+                return false;
+            } else {
+                i++;
+            }
+        }
+        return true;
+    }
+
 };
 },{}],7:[function(require,module,exports){
 /**
@@ -319,11 +441,12 @@ module.exports=function($http,$resource,$location,restConfig,$sce) {
 module.exports = function($scope, rest, $location) {
     $scope.message = 'This is the REST test page';
 
-    $scope.questionComplete = {};
+    $scope.getUn = {};
 
-    $scope.response ={};
+    $scope.getTout ={};
 
-    rest.getAll($scope.response, "questions");
+    rest.getAll($scope.getTout, "questions");
+    rest.getOne($scope.getUn, "questionnaires", 3);
 
 
     /*$scope.addToIncluded = function(){

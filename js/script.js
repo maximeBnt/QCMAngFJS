@@ -31,3 +31,49 @@ scotchApp.controller('contactController', function($scope) {
 });
 
 scotchApp.controller('restController', ["$scope", "rest", "$location", require("./testRest")]);
+
+
+scotchApp.controller('listController', function($scope, rest) {
+    $scope.message = 'Questionnaires disponibles :';
+    $scope.tableQuestionnaires ={};
+
+    // liste les questionnaires
+    rest.getAll($scope.tableQuestionnaires, "questionnaires");
+});
+
+scotchApp.controller('qcmControllerCoucou', function($scope, rest, $routeParams) {
+    $scope.message = 'Coucou';
+
+    $scope.id = $routeParams.id;
+
+    // liste les questions d'un questionnaire passé en paramètre
+    $scope.tabQuestions = {};
+    rest.getAll($scope.tabQuestions, "questions", "QuestionByQuestionnaire", 159);
+
+
+
+    // injection des questions dans le factory QCM (en test)
+    $scope.getQuestion = function () {
+
+        var q = qcmFactory.getQuestion($scope.id);
+        if (q) {
+            scope.question = $scope.tabQuestions.questions.libelle;
+            scope.options = q.options;
+            scope.answer = q.answer;
+            scope.answerMode = true;
+        } else {
+            scope.fini = true;
+        }
+    };
+
+    // liste les réponses d'une question passée en paramètre
+    $scope.tabReponses = {};
+    rest.getAll($scope.tabReponses, "reponses", "ReponseByQuestion", 169);
+    // ça marche pour l'id 69
+
+    // essaie de foreach pour récupérer les réponses
+    // des questions chargées précédemment
+
+    //angular.forEach()
+
+});

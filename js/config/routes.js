@@ -27,6 +27,16 @@ module.exports=function($routeProvider, $locationProvider) {
             templateUrl : 'pages/rest.html',
             controller  : 'restController'
         })
+
+        .when('/listQuestionnaire', {
+            templateUrl : 'pages/listQuestionnaire.html',
+            controller  : 'listController'
+        })
+
+        .when('/qcm/:id', {
+            templateUrl : 'pages/qcmComplet.html',
+            controller  : 'qcmControllerCoucou'
+        })
         .otherwise({
             redirectTo:'/'
         });
