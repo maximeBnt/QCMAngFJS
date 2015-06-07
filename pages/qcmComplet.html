@@ -11,8 +11,7 @@
     <div ng-repeat="item in tabQuestions.questions">
         <!-- liste les questions du questionnaires selectionné -->
         <a ng-href="qcm/{{item.id}}">{{item.libelle}} - ID : {{item.id}}</a>
-        <!-- liste les réponses mais que de la première question (bah oui elle est
-            en param dans la fonction-->
+        <!-- liste les réponses mais que de la première question (en param dans la fonction) -->
         <div ng-repeat="item in tabReponses.reponses">
             <p>{{item.libelle}}</p>
         </div>

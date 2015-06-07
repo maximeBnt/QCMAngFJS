@@ -232,7 +232,7 @@ scotchApp.controller('qcmControllerCoucou', function($scope, rest, $routeParams)
 
     // liste les questions d'un questionnaire passé en paramètre
     $scope.tabQuestions = {};
-    rest.getAll($scope.tabQuestions, "questions", "QuestionByQuestionnaire", 159);
+    rest.getAll($scope.tabQuestions, "questions", "QuestionByQuestionnaire", $scope.id);
 
 
 
@@ -254,6 +254,12 @@ scotchApp.controller('qcmControllerCoucou', function($scope, rest, $routeParams)
     $scope.tabReponses = {};
     rest.getAll($scope.tabReponses, "reponses", "ReponseByQuestion", 169);
     // ça marche pour l'id 69
+
+    var log = [];
+
+    angular.forEach($scope.tabReponses, function(reponses){
+        this.push(reponses);
+    }, log);
 
     // essaie de foreach pour récupérer les réponses
     // des questions chargées précédemment
