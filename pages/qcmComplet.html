@@ -4,18 +4,15 @@
 
     <p>{{ message }}</p>
 
-    coucou coucou
-
-    <p>{{id}}</p>
-
-    <div ng-repeat="item in tabQuestions.questions">
-        <!-- liste les questions du questionnaires selectionné -->
-        <a ng-href="qcm/{{item.id}}">{{item.libelle}} - ID : {{item.id}}</a>
-        <!-- liste les réponses mais que de la première question (en param dans la fonction) -->
-        <div ng-repeat="item in tabReponses.reponses">
-            <p>{{item.libelle}}</p>
+        <div ng-repeat="item in tabQuestions.questions">
+            <!-- liste les questions du questionnaires selectionné -->
+            <a ng-href="qcm/{{item.id}}">{{item.libelle}} - ID : {{item.id}}</a>
+            <!-- liste les réponses mais que de la première question (en param dans la fonction) -->
+            <div ng-repeat="item in tabReponses.reponses">
+                <p><input type="checkbox"> {{item.libelle}}</p>
+            </div>
         </div>
-    </div>
+        <input type="submit" Value="Envoyer" class="btn btn-default">
 
 
 </div>

@@ -39,21 +39,62 @@ scotchApp.controller('listController', function($scope, rest) {
 
     // liste les questionnaires
     rest.getAll($scope.tableQuestionnaires, "questionnaires");
+
+    /*
+    // <<NF>>
+    // Récupère les réponses, questions et questionnaires
+    $scope.data = {};
+    $scope.data.questionnaires = {};
+    rest.getAll($scope.data, "questionnaires");
+    $scope.data.questionnaires.questions = {};
+    rest.getAll($scope.data, "questions", "QuestionByQuestionnaire", $scope.idQuestionnaire, function(questions){
+        for(index in questions){
+            rest.getAll($scope.data.questions.reponses, "reponses", "ReponseByQuestion", questions[index].id)
+        }
+    }, "questions");*/
+
+
 });
 
 scotchApp.controller('qcmControllerCoucou', function($scope, rest, $routeParams) {
-    $scope.message = 'Coucou';
 
-    $scope.id = $routeParams.id;
+    $scope.idQuestionnaire = $routeParams.id; // on a passé l'id d'un questionnaire en param
+    $scope.message = 'Questionnaire n°' + $scope.idQuestionnaire;
 
     // liste les questions d'un questionnaire passé en paramètre
     $scope.tabQuestions = {};
-    rest.getAll($scope.tabQuestions, "questions", "QuestionByQuestionnaire", $scope.id);
+    rest.getAll($scope.tabQuestions, "questions", "QuestionByQuestionnaire", $scope.idQuestionnaire);
+
+
+    // liste les réponses d'une question passée en paramètre
+    $scope.tabReponses = {};
+    rest.getAll($scope.tabReponses, "reponses", "ReponseByQuestion", 169);
 
 
 
-    // injection des questions dans le factory QCM (en test)
-    $scope.getQuestion = function () {
+
+    // essaie avec "reponseByQuestionnaire"
+    /*
+    $scope.tabQCM = {};
+    rest.getAll($scope.tabQCM, "reponses", "ReponseByQuestionnaire", $scope.idQuestionnaire);
+
+    angular.forEach($scope.tabQuestions, function(question){
+        question.coucou = "coucou";
+    });
+    */
+
+    /*for(var i=0; i<$scope.tabQuestions.length; i++ ){
+        $scope.message = $scope.message + $scope.tabQuestions.length;
+    }*/
+
+
+
+
+
+
+    // <<NF>>
+    // injection des questions dans le factory QCM
+    /*$scope.getQuestion = function () {
 
         var q = qcmFactory.getQuestion($scope.id);
         if (q) {
@@ -64,11 +105,9 @@ scotchApp.controller('qcmControllerCoucou', function($scope, rest, $routeParams)
         } else {
             scope.fini = true;
         }
-    };
+    };*/
 
-    // liste les réponses d'une question passée en paramètre
-    $scope.tabReponses = {};
-    rest.getAll($scope.tabReponses, "reponses", "ReponseByQuestion", 169);
+
     // ça marche pour l'id 69
 
     //je veux parcourir ça : $scope.tabQuestions
@@ -77,18 +116,13 @@ scotchApp.controller('qcmControllerCoucou', function($scope, rest, $routeParams)
 
 
 
-
-
-
-
     /*var log = [];
-
-    angular.forEach($scope.tabReponses, function(reponses){
-        this.push(reponses);
+tabQuestionsr.forEach($questionbRepons    rest.getAll($scope.tabReponses, "reponses", "ReponseByQuestion", $idQuestion{
+      s.sh(reponses);
     }, log);*/
 
     // essaie de foreach pour récupérer les réponses
-    // des questions chargées précédemment
+    // des quesnt
 
     //angular.forEach()
 

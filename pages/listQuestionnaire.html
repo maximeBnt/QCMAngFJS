@@ -4,10 +4,21 @@
 
     <p>{{ message }}</p>
 
+    <div ng-repeat="item in data.questionnaires">
+        <!-- liste les questions du questionnaires selectionné -->
+        <a ng-href="qcm/{{item.id}}">{{item.libelle}} - ID : {{item.id}}</a>
+        <!-- liste les réponses mais que de la première question (en param dans la fonction) -->
+        <div ng-repeat="item in tabReponses.reponses">
+            <p>{{item.libelle}}</p>
+        </div>
+    </div>
 
     <div ng-repeat="item in tableQuestionnaires.questionnaires">
         <a ng-href="qcm/{{item.id}}">{{item.libelle}} - ID : {{item.id}}</a>
     </div>
+
+
+
 
 
 </div>
