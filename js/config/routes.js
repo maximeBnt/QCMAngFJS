@@ -35,7 +35,7 @@ module.exports=function($routeProvider, $locationProvider) {
 
         .when('/qcm/:id', {
             templateUrl : 'pages/qcmComplet.html',
-            controller  : 'qcmControllerCoucou'
+            controller  : 'qcmController'
         })
         .otherwise({
             redirectTo:'/'

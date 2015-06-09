@@ -8,7 +8,6 @@ scotchApp.config(['$routeProvider', '$locationProvider', require("./config/route
 scotchApp.factory("restConfig", require("./config/configFactory"));
 
 scotchApp.controller('mainController', function($scope) {});
-scotchApp.controller('qcmController', function($scope){});
 
 
 
@@ -56,7 +55,7 @@ scotchApp.controller('listController', function($scope, rest) {
 
 });
 
-scotchApp.controller('qcmControllerCoucou', function($scope, rest, $routeParams) {
+scotchApp.controller('qcmController', function($scope, rest, $routeParams) {
 
     $scope.idQuestionnaire = $routeParams.id; // on a passé l'id d'un questionnaire en param
     $scope.message = 'Questionnaire n°' + $scope.idQuestionnaire;

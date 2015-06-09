@@ -51,7 +51,7 @@ module.exports=function($routeProvider, $locationProvider) {
 
         .when('/qcm/:id', {
             templateUrl : 'pages/qcmComplet.html',
-            controller  : 'qcmControllerCoucou'
+            controller  : 'qcmController'
         })
         .otherwise({
             redirectTo:'/'
@@ -192,7 +192,6 @@ scotchApp.config(['$routeProvider', '$locationProvider', require("./config/route
 scotchApp.factory("restConfig", require("./config/configFactory"));
 
 scotchApp.controller('mainController', function($scope) {});
-scotchApp.controller('qcmController', function($scope){});
 
 
 
@@ -240,7 +239,7 @@ scotchApp.controller('listController', function($scope, rest) {
 
 });
 
-scotchApp.controller('qcmControllerCoucou', function($scope, rest, $routeParams) {
+scotchApp.controller('qcmController', function($scope, rest, $routeParams) {
 
     $scope.idQuestionnaire = $routeParams.id; // on a passé l'id d'un questionnaire en param
     $scope.message = 'Questionnaire n°' + $scope.idQuestionnaire;
@@ -253,12 +252,19 @@ scotchApp.controller('qcmControllerCoucou', function($scope, rest, $routeParams)
     // liste les réponses d'une question passée en paramètre
     $scope.tabReponses = {};
     rest.getAll($scope.tabReponses, "reponses", "ReponseByQuestion", 169);
+
+
+
+
+    // essaie avec "reponseByQuestionnaire"
+    /*
     $scope.tabQCM = {};
     rest.getAll($scope.tabQCM, "reponses", "ReponseByQuestionnaire", $scope.idQuestionnaire);
 
     angular.forEach($scope.tabQuestions, function(question){
         question.coucou = "coucou";
     });
+    */
 
     /*for(var i=0; i<$scope.tabQuestions.length; i++ ){
         $scope.message = $scope.message + $scope.tabQuestions.length;
